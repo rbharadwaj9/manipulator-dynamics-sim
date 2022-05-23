@@ -42,10 +42,10 @@ for k = 1 : length(x_pos)
   pause(0.05);  
 end
 
-function dxdf = single_link_dynamics(t, Xcurr, tau_t, tau, robot_config)
+function dXdt = single_link_dynamics(t, Xcurr, tau_t, tau, robot_config)
     g = 9.8; % m/s^2
     tau = interp1(tau_t, tau, t);
     
     robot = single_link(Xcurr, robot_config);
-    dxdf = forward_dynamics(robot, tau, Xcurr);
+    dXdt = forward_dynamics(robot, tau, Xcurr);
 end

@@ -1,4 +1,5 @@
 %{ 
+Robot: Single Link
 Idea:
 1. We have a trajectory that provides desired q, qdot, qddot at each time;
 and the desired q at this point. 

@@ -3,17 +3,21 @@ function tau = inverse_dynamics(t, robot, Xcurr, q_des_v, Kv, Kp)
     % Xcurr: [theta, theta dot]
     persistent prevErr prevTime;
     if isempty(prevErr)
-       prevErr = 0; 
+       prevErr = zeros(size(Xcurr, 1)/2, 1); 
     end
     if isempty(prevTime)
-       prevTime = 0; 
+       prevTime = zeros(size(Xcurr, 1)/2, 1); 
     end
     
-    error = Xcurr(1) - q_des_v(1);
+    error = calcAngleError(Xcurr(1:robot.dof, :), q_des_v(:, 1));
     
     derr_dt = (error - prevErr) / 1;
     prevErr = error;
     prevTime = t;
     
-    tau = robot.MassMat*(q_des_v(3) - Kv .* derr_dt - Kp .* error) + robot.CorMat*Xcurr(2) + robot.GravityMat; 
+    tau = robot.MassMat*(q_des_v(:, 3) - Kv * derr_dt - Kp * error) + robot.CorMat*Xcurr(robot.dof+1:end, 1) + robot.GravityMat; 
+end
+
+function Delta = calcAngleError(X, Y)
+    Delta = min((2 * pi) - (X - Y), (X - Y));
 end

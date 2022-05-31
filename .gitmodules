@@ -1,0 +1,3 @@
+[submodule "dynamics-dev"]
+	path = dynamics-dev
+	url = git@github.com:jmichaux/dynamics-dev.git

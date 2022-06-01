@@ -15,7 +15,7 @@ plot_traj(dof, q_traj, "Single Link Zero Velocity, Against Gravity");
 %% 1 revolute link moving in a circle, const velocity, acceleration
 T = (0:0.01:2*pi);
 dof = 1; % Num degrees of freedom
-qInit = [0; 1]; % 1 rad/s
+qInit = [-pi/2-pi/4; 1]; % 1 rad/s
 accel = zeros(dof, length(T));
 q_traj = motion_eqn(T, qInit, accel);
 qDes = q_traj(1, :, :);
@@ -23,7 +23,7 @@ qDes = q_traj(1, :, :);
 filename = '1link_const_vel.mat';
 save(filename, 'T', 'dof', 'qDes', 'q_traj');
 
-plot_traj(dof, q_traj, "Single Link Const Velocity Trajectory");
+plot_traj(dof, q_traj, "Single Link Const Velocity Trajectory Beginning in 3rd Quadrant");
 
 %% 1 revolute link with sine wave acceleration
 T = (0:0.01:2*pi);
@@ -102,6 +102,21 @@ qDes = squeeze(q_traj(1, :, :));
 filename = 'kinova_complex_vel.mat';
 save(filename, 'T', 'dof', 'qDes', 'q_traj');
 plot_traj(dof, q_traj, "Kinova Complex Trajectory");
+
+%% Kinova static in "home" position
+T = (0:0.01:2*pi);
+dof = 7; % Num degrees of freedom
+% Const velocity or 1 rad/second on joint 4
+qInit = zeros(2, dof); 
+qInit(1, :) = [0., -0.26179939, 3.14159265, -4.01425728, 0., -0.95993109, 1.57079633];
+accel = zeros(dof, length(T));
+
+q_traj = motion_eqn(T, qInit, accel);
+qDes = squeeze(q_traj(1, :, :));
+
+filename = 'kinova_const_home.mat';
+save(filename, 'T', 'dof', 'qDes', 'q_traj');
+plot_traj(dof, q_traj, "Kinova Const at Home Trajectory");
 
 %%
 % qInit = ([q;qdot] x dof) 

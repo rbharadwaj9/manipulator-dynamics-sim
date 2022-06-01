@@ -1,7 +1,7 @@
 function animate(Qres, Qdes, robot_config)
     % Animate resulting configuration against desired configuration for a
     % given robot.
-
+    Qres = Qres'
     % Convert theta to cartesian
     x_res_pos = robot_config.L1.*cos(Qres(:,1));
     y_res_pos = robot_config.L1.*sin(Qres(:,1));

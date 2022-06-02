@@ -9,7 +9,6 @@ time step through inverse dynamics/whatever controller we use.
 4. This solves for the q_resulting which we compare against q_des
 %}
 clear; close all;
-clear inverse_dynamics;
 load 1link_const_vel.mat
 T = T(1:int32(length(T)));
 q_traj = wrapToPi(q_traj(:, :, 1:length(T)));
@@ -17,22 +16,23 @@ qDes = wrapToPi(qDes(:, 1:length(T)));
 
 % Robot Properties
 robot_config.L1 = 1; % m
-robot_config.M = 1; % kg 
+robot_config.M = 0.5; % kg 
 
 % Tuning Parameters
-Kv = 7.5e6;
+% Kv = 7.5e6;
+% Kp = 5000;
+Kv = 300;
 Kp = 5000;
-% Kv = 30000;
-% Kp = 50;
 
 % Initial Condition
-Xtheta0 = [pi/2+pi/4, 0];
+Xtheta0 = [pi/2+pi/4; 0];
 
 %% Apply Control
+clear inverse_dynamics;
 [t,Xres] = ode45(@(t,Xtheta) single_link_dynamics(t, Xtheta, T, q_traj, robot_config, Kv, Kp), T, Xtheta0);
 Xres = Xres';
 
-%% Run Xres values to find out torques for plotting. 
+% Run Xres values to find out torques for plotting. 
 % Can't use vectorization because rnea only supports evaluation at one timeframe.
 goalTorques = zeros(dof, length(t));
 for i = 1:length(t)
@@ -81,5 +81,5 @@ function [dXdt, tau] = single_link_dynamics(t, Xcurr, runtime, q_des_v, robot_co
     robot.vel = Xcurr(robot.dof+1:end, :);
     
     tau = inverse_dynamics(t, robot, q_des_curr, Kv, Kp);
-    dXdt = forward_dynamics(robot, tau, Xcurr);
+    dXdt = forward_dynamics(robot, tau);
 end

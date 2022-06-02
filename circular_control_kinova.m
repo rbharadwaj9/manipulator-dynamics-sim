@@ -37,7 +37,7 @@ Kp = 30*eye(dof);
 % Xtheta0 = Xtheta0(:);
 Xtheta0 = zeros(dof, 2);
 % Xtheta0(:, 1) = wrapToPi([0., -0.26179939, 3.14159265, -4.01425728, 0., -0.95993109, 1.57079633])';
-Xtheta0(:, 1) = Xtheta0(:, 1) + pi/2;
+Xtheta0(4, 1) = Xtheta0(4, 1) + pi/2;
 Xtheta0 = Xtheta0(:);
 
 
@@ -115,11 +115,13 @@ function [dXdt, tau] = kinova_dynamics(t, Xcurr, runtime, q_des_v, kinova, robot
     robot.vel = Xcurr(robot.dof+1:end, :);
     
     % Calculate mass matrix, coriolis matrix, gravity vector
-    robot.MassMat = rnea_mass(robot.pos, robot_params);
-    robot.CorMat = rnea_coriolis(robot.pos, robot.vel, robot_params);
-    robot.GravityVec = rnea_gravity(robot.pos, robot_params);
+    % CLASSICAL BUGGY CURRENTLY
+    robot.MassMat = spatial_rnea_mass(robot.pos, robot_params);
+    robot.CorMat = spatial_rnea_coriolis(robot.pos, robot.vel, robot_params);
+    robot.GravityVec = spatial_rnea_gravity(robot.pos, robot_params); 
     
-    tau = inverse_dynamics(t, robot, q_des_curr, Kv, Kp);
+    tau = inverse_dynamics(t, robot, robot_params, q_des_curr, Kv, Kp);
     dXdt = forward_dynamics(robot, tau);
     % ODE Solver needs a column vector as return value
+%     tau = robot.GravityVec;
 end

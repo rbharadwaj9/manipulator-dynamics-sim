@@ -44,7 +44,7 @@ T = (0:0.01:2*pi);
 dof = 7; % Num degrees of freedom
 % Zero velocity
 qInit = zeros(2, 7);
-qInit(1, 4) = 0; %pi/2;
+qInit(1, 4) = pi/2;
 accel = zeros(dof, length(T));
 
 q_traj = motion_eqn(T, qInit, accel);

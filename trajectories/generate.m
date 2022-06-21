@@ -44,7 +44,6 @@ T = (0:0.01:2*pi);
 dof = 7; % Num degrees of freedom
 % Zero velocity
 qInit = zeros(2, 7);
-qInit(1, 4) = pi/2;
 accel = zeros(dof, length(T));
 
 q_traj = motion_eqn(T, qInit, accel);
@@ -57,7 +56,7 @@ plot_traj(dof, q_traj, "Kinova Zero Velocity Trajectory");
 %% Kinova with single joint const velocity
 T = (0:0.01:2*pi);
 dof = 7; % Num degrees of freedom
-% Const velocity or 1 rad/second on joint 4
+% Const velocity or 1 rad/second on joint 1
 qInit = zeros(2, 7); 
 qInit(2, 1) = 1;
 accel = zeros(dof, length(T));
@@ -87,14 +86,14 @@ save(filename, 'T', 'dof', 'qDes', 'q_traj');
 plot_traj(dof, q_traj, "Kinova Two Joints Const Velocity Trajectory");
 
 %% Kinova with multiple joint const velocity and accel
-T = (0:0.01:2*pi);
+T = (0:0.01:4*pi);
 dof = 7; % Num degrees of freedom
 % Const velocity or 1 rad/second on joint 4
 qInit = zeros(2, 7); 
 qInit(1, 2) = 0.019; % assume simulation always starts at 0s
-qInit(2, 4) = 1;
+qInit(2, 3) = 1;
 accel = zeros(dof, length(T));
-accel(1, :) = ones(1, length(T));
+accel(1, :) = 0.1*ones(1, length(T));
 
 q_traj = motion_eqn(T, qInit, accel);
 qDes = squeeze(q_traj(1, :, :));
@@ -108,7 +107,7 @@ T = (0:0.01:2*pi);
 dof = 7; % Num degrees of freedom
 % Const velocity or 1 rad/second on joint 4
 qInit = zeros(2, dof); 
-qInit(1, :) = [0., -0.26179939, 3.14159265, -4.01425728, 0., -0.95993109, 1.57079633];
+qInit(1, :) = wrapToPi([0., -0.26179939, 3.14159265, -4.01425728, 0., -0.95993109, 1.57079633]);
 accel = zeros(dof, length(T));
 
 q_traj = motion_eqn(T, qInit, accel);
@@ -117,6 +116,59 @@ qDes = squeeze(q_traj(1, :, :));
 filename = 'kinova_const_home.mat';
 save(filename, 'T', 'dof', 'qDes', 'q_traj');
 plot_traj(dof, q_traj, "Kinova Const at Home Trajectory");
+
+%% Kinova const accel in "home" position joint 7
+T = (0:0.01:2*pi);
+dof = 7; % Num degrees of freedom
+% Const velocity or 1 rad/second on joint 4
+qInit = zeros(2, dof); 
+qInit(1, :) = wrapToPi([0., -0.26179939, 3.14159265, -4.01425728, 0., -0.95993109, 1.57079633]);
+accel = zeros(dof, length(T));
+accel(7, :) = 1;
+
+q_traj = motion_eqn(T, qInit, accel);
+qDes = squeeze(q_traj(1, :, :));
+
+filename = 'kinova_const_accel_home.mat';
+save(filename, 'T', 'dof', 'qDes', 'q_traj');
+plot_traj(dof, q_traj, "Kinova Const Accel at Home Trajectory");
+
+%% Kinova const accel in "zero" position joint 7
+T = (0:0.01:2*pi);
+dof = 7; % Num degrees of freedom
+% Const velocity or 1 rad/second on joint 4
+qInit = zeros(2, dof); 
+accel = zeros(dof, length(T));
+accel(7, :) = 1;
+
+q_traj = motion_eqn(T, qInit, accel);
+qDes = squeeze(q_traj(1, :, :));
+
+filename = 'kinova_const_accel_zero.mat';
+save(filename, 'T', 'dof', 'qDes', 'q_traj');
+plot_traj(dof, q_traj, "Kinova Const Accel at Zero Trajectory");
+
+%% Kinova Complex Accelerations All Joints
+T = (0:0.01:2*pi);
+dof = 7; % Num degrees of freedom
+% Const velocity or 1 rad/second on joint 4
+qInit = zeros(2, dof); 
+% qInit(1, :) = [0., -0.26179939, 3.14159265, -4.01425728, 0., -0.95993109, 1.57079633];
+accel = zeros(dof, length(T));
+accel(1, :) = 0.3*sin(T);
+accel(2, :) = 0.05*sin(T); % Revolute
+accel(3, :) = -0.3*sin(T);
+accel(4, :) = -0.05*sin(T); % Revolute
+accel(5, :) = 0.3*sin(T);
+accel(6, :) = 0.05*sin(T); % Revolute
+accel(7, :) = 0.2;
+
+q_traj = motion_eqn(T, qInit, accel);
+qDes = squeeze(q_traj(1, :, :));
+
+filename = 'kinova_complex_all_jt.mat';
+save(filename, 'T', 'dof', 'qDes', 'q_traj');
+plot_traj(dof, q_traj, "Kinova All joints complex accelerations");
 
 %%
 % qInit = ([q;qdot] x dof) 
